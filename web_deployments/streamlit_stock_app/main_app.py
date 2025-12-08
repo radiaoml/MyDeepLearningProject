@@ -25,7 +25,7 @@ st.title("📈 Stock Price Prediction (LSTM) - S&P 500 Stocks")
 # Fetch S&P 500 Tickers from Wikipedia
 # ---------------------------------------------------------------
 @st.cache_data
-def load_sp500_tickers():
+def fetch_sp500_symbols():
     url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     headers = {"User-Agent": "Mozilla/5.0"}
     response = requests.get(url, headers=headers)
@@ -36,7 +36,7 @@ def load_sp500_tickers():
     tickers = df["Symbol"].tolist()
     return sorted(tickers)
 
-tickers = load_sp500_tickers()
+tickers = fetch_sp500_symbols()
 
 # ---------------------------------------------------------------
 # Sidebar inputs
@@ -58,13 +58,13 @@ predict_button = st.sidebar.button("RUN PREDICTION 🚀")
 # ---------------------------------------------------------------
 # Convert horizon values to total days
 # ---------------------------------------------------------------
-def total_days(days, weeks, months, years):
+def calculate_prediction_days(days, weeks, months, years):
     return days + (weeks * 7) + (months * 30) + (years * 365)
 
 # ---------------------------------------------------------------
 # ✅ Robust YFinance Downloader
 # ---------------------------------------------------------------
-def download_fixed(symbol, start, end):
+def fetch_stock_data(symbol, start, end):
     # Try the normal API first
     df = yf.download(symbol, start=start, end=end, interval="1d",
                      auto_adjust=False, actions=False, progress=False)
@@ -111,7 +111,7 @@ def download_fixed(symbol, start, end):
 # ---------------------------------------------------------------
 # Build or Load LSTM model
 # ---------------------------------------------------------------
-def get_or_train_model(symbol, X_train, y_train):
+def load_or_create_lstm_model(symbol, X_train, y_train):
     # Get the directory where this script is located (A3 folder)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_filename = os.path.join(script_dir, f"{symbol}.h5")
@@ -141,7 +141,7 @@ def get_or_train_model(symbol, X_train, y_train):
 # Prediction Execution
 # ---------------------------------------------------------------
 if predict_button:
-    data = download_fixed(symbol, start_date, end_date)
+    data = fetch_stock_data(symbol, start_date, end_date)
     close_column = [c for c in data.columns if "Close" in c][0]
 
     if data.empty:
@@ -163,7 +163,7 @@ if predict_button:
     X_train, y_train = np.array(X_train), np.array(y_train)
     X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
 
-    model = get_or_train_model(symbol, X_train, y_train)
+    model = load_or_create_lstm_model(symbol, X_train, y_train)
 
     # ----------------- Historical Prediction -----------------
     test_data = scaled_data[training_size-100:]
@@ -172,7 +172,7 @@ if predict_button:
     predictions = scaler.inverse_transform(model.predict(X_test))
 
     # ----------------- Future Prediction -----------------
-    future_days = total_days(days, weeks, months, years)
+    future_days = calculate_prediction_days(days, weeks, months, years)
     last_100 = scaled_data[-100:].tolist()
     future_values = []
 

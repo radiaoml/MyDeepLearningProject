@@ -17,10 +17,10 @@ The app is deployed on Streamlit Cloud and ready to use!
 .\venv\Scripts\Activate.ps1
 
 # Navigate to streamlit folder
-cd A3\streamlit
+cd web_deployments\streamlit_stock_app
 
 # Run the Streamlit app
-streamlit run stock_prediction_app.py
+streamlit run main_app.py
 
 # Open: http://localhost:8501
 ```
@@ -67,12 +67,12 @@ streamlit run stock_prediction_app.py
 
 ### Change Port
 ```powershell
-streamlit run stock_prediction_app.py --server.port 8502
+streamlit run main_app.py --server.port 8502
 ```
 
 ### Disable Auto-reload
 ```powershell
-streamlit run stock_prediction_app.py --server.runOnSave false
+streamlit run main_app.py --server.runOnSave false
 ```
 
 ---
@@ -80,10 +80,10 @@ streamlit run stock_prediction_app.py --server.runOnSave false
 ## 📁 Project Structure
 
 ```
-A3/streamlit/
-├── stock_prediction_app.py  # Main Streamlit application
-├── AAPL.h5                   # Pre-trained model (optional)
-└── README.md                 # This file
+web_deployments/streamlit_stock_app/
+├── main_app.py                # Main Streamlit application
+├── AAPL.h5                    # Pre-trained model (optional)
+└── README.md                  # This file
 ```
 
 ---
@@ -97,7 +97,7 @@ This app is deployed at: **[https://lab1-stock-prediction-app.streamlit.app/](ht
 1. Push code to GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io)
 3. Connect your repository
-4. Select `A3/streamlit/stock_prediction_app.py`
+4. Select `web_deployments/streamlit_stock_app/main_app.py`
 5. Deploy!
 
 ---
@@ -106,7 +106,7 @@ This app is deployed at: **[https://lab1-stock-prediction-app.streamlit.app/](ht
 
 - **First prediction** for each stock takes 5-10 minutes (training)
 - **Subsequent predictions** are instant (uses cached model)
-- **Models are saved** as `{SYMBOL}.h5` in the streamlit folder
+- **Models are saved** as `{SYMBOL}.h5` in the streamlit_stock_app folder
 - **Try different stocks** - All S&P 500 stocks are available!
 
 ---
