@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📈 Flask Stock Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin: 0 3px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-predict:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .result-title {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .error {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #fee;
+            border-left: 4px solid #e74c3c;
+            border-radius: 8px;
+            color: #c0392b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📈 Flask Stock Prediction</h1>
+        <p class="subtitle">
+            AI-Powered LSTM Stock Forecasting
+            <br>
+            <span class="badge">Flask</span>
+            <span class="badge">LSTM</span>
+            <span class="badge">Python</span>
+        </p>
+
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="symbol">Stock Symbol</label>
+                <input type="text" id="symbol" placeholder="e.g., AAPL, MSFT, GOOGL" value="AAPL" required>
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">Historical Data Start Date</label>
+                <input type="date" id="startDate" value="2015-01-01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">Historical Data End Date</label>
+                <input type="date" id="endDate" value="2023-12-31" required>
+            </div>
+
+            <div class="form-group">
+                <label for="predictionDays">Prediction Horizon (Days)</label>
+                <input type="number" id="predictionDays" min="1" max="365" value="30" required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-predict" id="predictBtn">
+                    🚀 Predict Stock Price
+                </button>
+                <button type="button" class="btn-reset" onclick="resetForm()">
+                    🔄 Reset
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #667eea; font-weight: 600;">
+                Analyzing stock data and generating predictions...
+            </p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="results" id="results">
+            <div class="result-header">
+                <div class="result-title" id="resultSymbol"></div>
+            </div>
+            <div id="resultMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const error = document.getElementById('error');
+        const predictBtn = document.getElementById('predictBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            results.style.display = 'none';
+            error.style.display = 'none';
+            loading.style.display = 'block';
+            predictBtn.disabled = true;
+
+            const data = {
+                symbol: document.getElementById('symbol').value.toUpperCase(),
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                prediction_days: parseInt(document.getElementById('predictionDays').value)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    displayResults(result);
+                } else {
+                    throw new Error(result.message || 'Prediction failed');
+                }
+
+            } catch (err) {
+                error.textContent = `❌ Error: ${err.message}`;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                predictBtn.disabled = false;
+            }
+        });
+
+        function displayResults(data) {
+            document.getElementById('resultSymbol').textContent = `${data.symbol} Stock Prediction`;
+
+            let html = `
+                <strong>${data.message}</strong><br><br>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 1.2em; color: #666;">Current Price</div>
+                    <div style="font-size: 2.5em; color: #27ae60; font-weight: 700;">$${data.current_price}</div>
+                </div>
+            `;
+
+            if (data.predicted_prices && data.predicted_prices.length > 0) {
+                html += `
+                    <div style="margin-top: 20px;">
+                        <strong>📈 Predicted Prices (First 7 days):</strong><br><br>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
+                `;
+
+                const displayCount = Math.min(7, data.predicted_prices.length);
+                for (let i = 0; i < displayCount; i++) {
+                    html += `
+                        <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 0.85em; color: #666;">${data.prediction_dates[i]}</div>
+                            <div style="font-size: 1.2em; color: #667eea; font-weight: 700;">$${data.predicted_prices[i]}</div>
+                        </div>
+                    `;
+                }
+
+                html += `</div></div>`;
+
+                if (data.predicted_prices.length > 7) {
+                    html += `<p style="margin-top: 15px; text-align: center; color: #666;">
+                        <em>Showing first 7 of ${data.predicted_prices.length} predictions</em>
+                    </p>`;
+                }
+            }
+
+            document.getElementById('resultMessage').innerHTML = html;
+            results.style.display = 'block';
+        }
+
+        function resetForm() {
+            form.reset();
+            results.style.display = 'none';
+            error.style.display = 'none';
+            document.getElementById('symbol').value = 'AAPL';
+            document.getElementById('startDate').value = '2015-01-01';
+            document.getElementById('endDate').value = '2023-12-31';
+            document.getElementById('predictionDays').value = '30';
+        }
+    </script>
+</body>
+
+</html>
