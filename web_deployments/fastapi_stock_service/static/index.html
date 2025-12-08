@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📈 Stock Price Prediction</title>
+    <title>⚡ FastAPI Stock Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,262 +15,578 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            background: #0a0e27;
+            color: #e0e7ff;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0a0e27 0%, #1a1f3a 50%, #2a2f4a 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        h1 {
+        /* Header */
+        .header {
             text-align: center;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            margin-bottom: 50px;
+        }
+
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 5rem;
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -2px;
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            font-size: 1.3rem;
+            color: #94a3b8;
+            font-weight: 400;
         }
 
+        .api-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 35px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        /* Form Styles */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 12px;
+            color: #cbd5e1;
             font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        input, select {
+        input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 14px;
+            font-size: 1rem;
+            color: #f1f5f9;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
         }
 
-        input:focus, select:focus {
+        input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #6366f1;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
         }
 
+        input::placeholder {
+            color: #64748b;
+        }
+
+        /* Buttons */
         .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-top: 35px;
         }
 
         button {
-            flex: 1;
-            padding: 15px;
+            padding: 18px 30px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-predict {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
         }
 
-        .btn-predict:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        .btn-predict:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
         }
 
         .btn-predict:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         .btn-reset {
-            background: #f0f0f0;
-            color: #333;
+            background: rgba(148, 163, 184, 0.15);
+            color: #cbd5e1;
+            border: 2px solid rgba(148, 163, 184, 0.3);
         }
 
         .btn-reset:hover {
-            background: #e0e0e0;
+            background: rgba(148, 163, 184, 0.25);
         }
 
+        /* Loading State */
         .loading {
             display: none;
             text-align: center;
-            margin-top: 20px;
+            padding: 60px 20px;
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(99, 102, 241, 0.2);
+            border-top: 5px solid #6366f1;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 25px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
+        .loading-text {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Results */
         .results {
             display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px;
         }
 
-        .result-header {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .stat-change {
+            font-size: 1rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #10b981;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        /* Predictions Grid */
+        .predictions-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 25px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
-        }
-
-        .result-title {
-            font-size: 1.5em;
-            color: #667eea;
-            font-weight: 700;
-        }
-
-        .current-price {
-            font-size: 2em;
-            color: #2ecc71;
-            font-weight: 700;
+            gap: 12px;
         }
 
         .predictions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .prediction-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 25px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .prediction-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: scale(1.08);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
         }
 
         .prediction-date {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .prediction-price {
-            font-size: 1.3em;
-            color: #667eea;
+            font-size: 1.6rem;
             font-weight: 700;
+            color: #6366f1;
         }
 
+        /* Error */
         .error {
             display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background: #fee;
-            border-left: 4px solid #e74c3c;
-            border-radius: 8px;
-            color: #c0392b;
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            border-left: 5px solid #ef4444;
+            border-radius: 16px;
+            padding: 25px;
+            color: #fca5a5;
+            margin-top: 25px;
+            font-weight: 500;
         }
 
-        .success-message {
-            color: #27ae60;
-            font-weight: 600;
-            margin-top: 10px;
+        /* Welcome State */
+        .welcome {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .welcome-icon {
+            font-size: 6rem;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 15px;
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Info Panel */
+        .info-panel {
+            background: rgba(99, 102, 241, 0.08);
+            border: 2px solid rgba(99, 102, 241, 0.25);
+            border-radius: 18px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .info-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            padding: 10px 0;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .info-list li::before {
+            content: "⚡";
+            font-size: 1.2rem;
         }
     </style>
 </head>
+
 <body>
+    <div class="bg-animation"></div>
+
     <div class="container">
-        <h1>📈 Stock Price Prediction</h1>
-        <p class="subtitle">AI-Powered LSTM Stock Forecasting</p>
-
-        <form id="predictionForm">
-            <div class="form-group">
-                <label for="symbol">Stock Symbol</label>
-                <input type="text" id="symbol" placeholder="e.g., AAPL, MSFT, GOOGL" value="AAPL" required>
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">⚡</div>
             </div>
-
-            <div class="form-group">
-                <label for="startDate">Historical Data Start Date</label>
-                <input type="date" id="startDate" value="2015-01-01" required>
-            </div>
-
-            <div class="form-group">
-                <label for="endDate">Historical Data End Date</label>
-                <input type="date" id="endDate" value="2023-12-31" required>
-            </div>
-
-            <div class="form-group">
-                <label for="predictionDays">Prediction Horizon (Days)</label>
-                <input type="number" id="predictionDays" min="1" max="365" value="30" required>
-            </div>
-
-            <div class="button-group">
-                <button type="submit" class="btn-predict" id="predictBtn">
-                    🚀 Predict Stock Price
-                </button>
-                <button type="button" class="btn-reset" onclick="resetForm()">
-                    🔄 Reset
-                </button>
-            </div>
-        </form>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p style="margin-top: 10px; color: #667eea; font-weight: 600;">
-                Analyzing stock data and generating predictions...
-            </p>
+            <h1 class="main-title">FastAPI Stock Predictor</h1>
+            <p class="subtitle">Lightning-Fast LSTM Neural Network Forecasting</p>
+            <span class="api-badge">Powered by FastAPI + TensorFlow</span>
         </div>
 
-        <div class="error" id="error"></div>
-
-        <div class="results" id="results">
-            <div class="result-header">
-                <div>
-                    <div class="result-title" id="resultSymbol"></div>
-                    <div class="success-message" id="resultMessage"></div>
+        <div class="main-layout">
+            <!-- Input Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⚙️</span>
+                    <h2 class="card-title">Settings</h2>
                 </div>
-                <div class="current-price" id="currentPrice"></div>
+
+                <form id="predictionForm">
+                    <div class="form-group">
+                        <label for="symbol">📊 Stock Symbol</label>
+                        <input type="text" id="symbol" placeholder="Enter ticker (AAPL, TSLA, GOOGL)" value="AAPL"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">📅 Start Date</label>
+                        <input type="date" id="startDate" value="2015-01-01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">📅 End Date</label>
+                        <input type="date" id="endDate" value="2023-12-31" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="predictionDays">🔮 Forecast Days</label>
+                        <input type="number" id="predictionDays" min="1" max="365" value="30" required>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-predict" id="predictBtn">
+                            ⚡ Predict Now
+                        </button>
+                        <button type="button" class="btn-reset" onclick="resetForm()">
+                            🔄 Reset
+                        </button>
+                    </div>
+                </form>
+
+                <div class="info-panel">
+                    <div class="info-title">💡 Quick Guide</div>
+                    <ul class="info-list">
+                        <li>Choose your stock symbol</li>
+                        <li>Set historical data range</li>
+                        <li>Define prediction period</li>
+                        <li>Get AI-powered forecasts</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="predictions-grid" id="predictionsGrid"></div>
+            <!-- Results Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📈</span>
+                    <h2 class="card-title">Analysis Results</h2>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p class="loading-text">⚡ Processing market data with AI...</p>
+                    <p style="color: #64748b; margin-top: 12px; font-size: 0.95rem;">Please wait while we analyze the
+                        data</p>
+                </div>
+
+                <div class="error" id="error"></div>
+
+                <div class="results" id="results">
+                    <div class="stats-grid" id="statsGrid"></div>
+                    <div class="predictions-section" id="predictionsSection"></div>
+                </div>
+
+                <div class="welcome" id="welcomeMessage">
+                    <div class="welcome-icon">📊</div>
+                    <h3 class="welcome-title">Ready for Predictions</h3>
+                    <p class="welcome-text">Configure your parameters and click "Predict Now" to generate AI-powered
+                        stock forecasts</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -277,13 +596,14 @@
         const results = document.getElementById('results');
         const error = document.getElementById('error');
         const predictBtn = document.getElementById('predictBtn');
+        const welcomeMessage = document.getElementById('welcomeMessage');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Hide previous results/errors
             results.style.display = 'none';
             error.style.display = 'none';
+            welcomeMessage.style.display = 'none';
             loading.style.display = 'block';
             predictBtn.disabled = true;
 
@@ -321,23 +641,70 @@
         });
 
         function displayResults(data) {
-            document.getElementById('resultSymbol').textContent = data.symbol;
-            document.getElementById('currentPrice').textContent = `$${data.current_price}`;
-            document.getElementById('resultMessage').textContent = data.message;
+            welcomeMessage.style.display = 'none';
 
-            const grid = document.getElementById('predictionsGrid');
-            grid.innerHTML = '';
+            // Calculate metrics
+            const lastPrice = data.predicted_prices[data.predicted_prices.length - 1];
+            const priceChange = lastPrice - data.current_price;
+            const priceChangePct = ((priceChange / data.current_price) * 100).toFixed(2);
+            const isPositive = priceChange >= 0;
 
-            data.predicted_prices.forEach((price, index) => {
-                const card = document.createElement('div');
-                card.className = 'prediction-card';
-                card.innerHTML = `
-                    <div class="prediction-date">${data.prediction_dates[index]}</div>
-                    <div class="prediction-price">$${price}</div>
+            // Display stats
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-label">Symbol</div>
+                    <div class="stat-value" style="font-size: 2.5rem;">${data.symbol}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Current Price</div>
+                    <div class="stat-value">$${data.current_price}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Predicted Price</div>
+                    <div class="stat-value">$${lastPrice}</div>
+                    <div class="stat-change ${isPositive ? 'positive' : 'negative'}">
+                        ${isPositive ? '↗' : '↘'} ${isPositive ? '+' : ''}${priceChangePct}%
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Forecast Period</div>
+                    <div class="stat-value" style="font-size: 2.5rem;">${data.predicted_prices.length}</div>
+                    <div style="color: #94a3b8; font-size: 0.9rem; margin-top: 8px;">days</div>
+                </div>
+            `;
+
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+
+            // Display predictions
+            let predictionsHtml = `
+                <h3 class="section-title">
+                    <span>📅</span>
+                    Daily Forecast (First ${Math.min(21, data.predicted_prices.length)} Days)
+                </h3>
+                <div class="predictions-grid">
+            `;
+
+            const displayCount = Math.min(21, data.predicted_prices.length);
+            for (let i = 0; i < displayCount; i++) {
+                predictionsHtml += `
+                    <div class="prediction-card">
+                        <div class="prediction-date">${data.prediction_dates[i]}</div>
+                        <div class="prediction-price">$${data.predicted_prices[i]}</div>
+                    </div>
                 `;
-                grid.appendChild(card);
-            });
+            }
 
+            predictionsHtml += `</div>`;
+
+            if (data.predicted_prices.length > 21) {
+                predictionsHtml += `
+                    <p style="text-align: center; margin-top: 25px; color: #64748b; font-style: italic;">
+                        Showing first 21 of ${data.predicted_prices.length} predictions
+                    </p>
+                `;
+            }
+
+            document.getElementById('predictionsSection').innerHTML = predictionsHtml;
             results.style.display = 'block';
         }
 
@@ -345,6 +712,7 @@
             form.reset();
             results.style.display = 'none';
             error.style.display = 'none';
+            welcomeMessage.style.display = 'block';
             document.getElementById('symbol').value = 'AAPL';
             document.getElementById('startDate').value = '2015-01-01';
             document.getElementById('endDate').value = '2023-12-31';
@@ -352,4 +720,5 @@
         }
     </script>
 </body>
+
 </html>
