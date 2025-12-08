@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import load_model, Sequential
-from keras.layers import LSTM, Dense, Dropout
+from keras.layers import LSTM, Dense, Dropout, Input
 import os
 from datetime import timedelta
 
@@ -90,7 +90,8 @@ def handle_stock_prediction():
         else:
             # Train new model
             model = Sequential()
-            model.add(LSTM(50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
+            model.add(Input(shape=(X_train.shape[1], 1)))
+            model.add(LSTM(50, return_sequences=True))
             model.add(Dropout(0.2))
             model.add(LSTM(50, return_sequences=True))
             model.add(Dropout(0.2))
