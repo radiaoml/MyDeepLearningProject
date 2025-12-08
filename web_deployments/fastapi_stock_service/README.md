@@ -10,11 +10,11 @@ pip install fastapi uvicorn[standard] pydantic
 ### 2. Run the API
 ```powershell
 # From the project root
-cd A3\fastapi
-uvicorn main:app --reload
+cd web_deployments\fastapi_stock_service
+uvicorn api_server:app --reload
 
 # Or from anywhere
-uvicorn A3.fastapi.main:app --reload
+uvicorn web_deployments.fastapi_stock_service.api_server:app --reload
 ```
 
 ### 3. Access the Application
@@ -156,13 +156,13 @@ fetch('http://localhost:8000/predict', {
 ## 📁 Project Structure
 
 ```
-A3/
-├── fastapi/
-│   ├── main.py              # FastAPI application
+web_deployments/
+├── fastapi_stock_service/
+│   ├── api_server.py        # FastAPI application
 │   ├── requirements.txt     # FastAPI dependencies
 │   ├── README.md           # This file
+│   ├── static/             # Web UI files
 │   └── *.h5                # Trained models (auto-generated)
-└── stock_prediction_app.py  # Streamlit app
 ```
 
 ---
@@ -171,17 +171,17 @@ A3/
 
 ### Change Port
 ```powershell
-uvicorn main:app --reload --port 8080
+uvicorn api_server:app --reload --port 8080
 ```
 
 ### Production Mode (no auto-reload)
 ```powershell
-uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn api_server:app --host 0.0.0.0 --port 8000
 ```
 
 ### With Workers (for production)
 ```powershell
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+uvicorn api_server:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
 ---
@@ -191,20 +191,20 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 ### Port Already in Use
 ```powershell
 # Use a different port
-uvicorn main:app --reload --port 8001
+uvicorn api_server:app --reload --port 8001
 ```
 
 ### Module Not Found
 ```powershell
 # Make sure you're in the right directory
-cd A3\fastapi
-uvicorn main:app --reload
+cd web_deployments\fastapi_stock_service
+uvicorn api_server:app --reload
 ```
 
 ### Model Training Takes Too Long
 - First prediction will train the model (5-10 minutes)
 - Subsequent predictions use the cached model (instant)
-- Models are saved as `{SYMBOL}.h5` in the fastapi folder
+- Models are saved as `{SYMBOL}.h5` in the fastapi_stock_service folder
 
 ---
 

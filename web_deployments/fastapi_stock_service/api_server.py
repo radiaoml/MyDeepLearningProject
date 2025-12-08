@@ -56,7 +56,7 @@ class PredictionResponse(BaseModel):
 # Helper Functions
 # ---------------------------------------------------------------
 
-def download_stock_data(symbol: str, start: str, end: str):
+def fetch_yahoo_finance_data(symbol: str, start: str, end: str):
     """Download stock data from Yahoo Finance"""
     try:
         df = yf.download(symbol, start=start, end=end, interval="1d",
@@ -89,7 +89,7 @@ def download_stock_data(symbol: str, start: str, end: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error downloading data: {str(e)}")
 
-def get_or_train_model(symbol: str, X_train, y_train):
+def load_or_build_lstm_model(symbol: str, X_train, y_train):
     """Load existing model or train a new one"""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_filename = os.path.join(script_dir, f"{symbol}.h5")
@@ -118,12 +118,12 @@ def get_or_train_model(symbol: str, X_train, y_train):
 # ---------------------------------------------------------------
 
 @app.get("/")
-def root():
+def serve_web_interface():
     """Serve the web UI"""
     return FileResponse(os.path.join(os.path.dirname(__file__), "static", "index.html"))
 
 @app.get("/api")
-def api_info():
+def get_api_information():
     """API information"""
     return {
         "message": "📈 Stock Price Prediction API",
@@ -138,11 +138,11 @@ def api_info():
     }
 
 @app.get("/health")
-def health_check():
+def check_service_health():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 @app.post("/predict", response_model=PredictionResponse)
-def predict_stock_price(request: PredictionRequest):
+def generate_stock_predictions(request: PredictionRequest):
     """
     Predict future stock prices using LSTM model
     
@@ -153,7 +153,7 @@ def predict_stock_price(request: PredictionRequest):
     """
     try:
         # Download data
-        data = download_stock_data(request.symbol, request.start_date, request.end_date)
+        data = fetch_yahoo_finance_data(request.symbol, request.start_date, request.end_date)
         close_column = [c for c in data.columns if "Close" in c][0]
         dataset = data[[close_column]].values
         
@@ -174,7 +174,7 @@ def predict_stock_price(request: PredictionRequest):
         X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
         
         # Get or train model
-        model = get_or_train_model(request.symbol, X_train, y_train)
+        model = load_or_build_lstm_model(request.symbol, X_train, y_train)
         
         # Make future predictions
         last_100 = scaled_data[-100:].tolist()
@@ -212,5 +212,5 @@ def predict_stock_price(request: PredictionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ---------------------------------------------------------------
-# Run with: uvicorn main:app --reload
+# Run with: uvicorn api_server:app --reload
 # ---------------------------------------------------------------
