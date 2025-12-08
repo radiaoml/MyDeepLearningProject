@@ -2,7 +2,7 @@
 
 ## 🌐 Live Demo
 
-**Try it now:** [https://lab1-stock-prediction-app.streamlit.app/](https://lab1-stock-prediction-app.streamlit.app/)
+**Try it now:** [https://stockapp-radia.streamlit.app](https://stockapp-radia.streamlit.app)
 
 The app is deployed on Streamlit Cloud and ready to use!
 
@@ -91,7 +91,7 @@ web_deployments/streamlit_stock_app/
 ## 🚀 Deployment
 
 ### Streamlit Cloud (Live)
-This app is deployed at: **[https://lab1-stock-prediction-app.streamlit.app/](https://lab1-stock-prediction-app.streamlit.app/)**
+This app is deployed at: **[https://stockapp-radia.streamlit.app](https://stockapp-radia.streamlit.app)**
 
 ### Deploy Your Own
 1. Push code to GitHub

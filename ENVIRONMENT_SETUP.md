@@ -4,6 +4,8 @@
 
 A Python virtual environment has been created with all necessary dependencies for your neural network models and Streamlit app.
 
+**🌐 Live Streamlit Demo:** [https://stockapp-radia.streamlit.app](https://stockapp-radia.streamlit.app)
+
 ---
 
 ## 📦 Installed Packages

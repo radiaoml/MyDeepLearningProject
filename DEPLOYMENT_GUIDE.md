@@ -4,13 +4,15 @@
 
 You have **3 different deployments** of the stock prediction app:
 
-1. **Streamlit** - Interactive web app (easiest to use)
+1. **Streamlit** - Interactive web app (easiest to use) - [🌐 Live Demo](https://stockapp-radia.streamlit.app)
 2. **FastAPI** - REST API with web UI
 3. **Django** - Full web framework (basic setup)
 
 ---
 
 ## 1️⃣ Streamlit App (Recommended for Quick Use)
+
+**🌐 Live Demo:** [https://stockapp-radia.streamlit.app](https://stockapp-radia.streamlit.app)
 
 ```powershell
 # Activate virtual environment
