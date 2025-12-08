@@ -17,8 +17,8 @@ You have **3 different deployments** of the stock prediction app:
 .\venv\Scripts\Activate.ps1
 
 # Run Streamlit
-cd A3\streamlit
-streamlit run stock_prediction_app.py
+cd web_deployments\streamlit_stock_app
+streamlit run main_app.py
 
 # Open: http://localhost:8501
 ```
@@ -38,8 +38,8 @@ streamlit run stock_prediction_app.py
 .\venv\Scripts\Activate.ps1
 
 # Run FastAPI
-cd A3\fastapi
-uvicorn main:app --reload
+cd web_deployments\fastapi_stock_service
+uvicorn api_server:app --reload
 
 # Open: http://localhost:8000
 ```
@@ -59,7 +59,7 @@ uvicorn main:app --reload
 .\venv\Scripts\Activate.ps1
 
 # Navigate to django folder
-cd A3\django
+cd web_deployments\django_stock_platform
 
 # Run migrations (first time only)
 ..\..\venv\Scripts\python manage.py migrate
@@ -103,10 +103,10 @@ cd A3\django
 ### Port Already in Use
 ```powershell
 # Streamlit - use different port
-streamlit run stock_prediction_app.py --server.port 8502
+streamlit run main_app.py --server.port 8502
 
 # FastAPI - use different port
-uvicorn main:app --reload --port 8001
+uvicorn api_server:app --reload --port 8001
 
 # Django - use different port
 python manage.py runserver 8080
@@ -125,29 +125,29 @@ python manage.py runserver 8080
 ## 📁 Project Structure
 
 ```
-lab1/
+my-deep-learning-repo/
 ├── venv/                        # Virtual environment
 ├── requirements.txt             # All dependencies
-├── A1/                          # Neural network models
-│   ├── Lab_ANN_Bousmah (1).py
-│   ├── Lab_lstm.py
-│   ├── lab_lstm_dynamic.py
-│   └── lab_rnn.py
-└── A3/                          # Deployments
-    ├── streamlit/               # ✅ Streamlit (READY)
-    │   ├── stock_prediction_app.py
+├── neural_networks_lab/         # Neural network models
+│   ├── fashion_mnist_classification.py
+│   ├── stock_prediction_lstm.py
+│   ├── stock_prediction_lstm_dynamic.py
+│   └── stock_prediction_rnn.py
+└── web_deployments/             # Deployments
+    ├── streamlit_stock_app/     # ✅ Streamlit (READY)
+    │   ├── main_app.py
     │   └── README.md
-    ├── fastapi/                 # ✅ FastAPI (READY)
-    │   ├── main.py
+    ├── fastapi_stock_service/   # ✅ FastAPI (READY)
+    │   ├── api_server.py
     │   ├── static/index.html
     │   └── README.md
-    ├── django/                  # ✅ Django (READY)
+    ├── django_stock_platform/   # ✅ Django (READY)
     │   ├── manage.py
     │   ├── stock_prediction/
     │   ├── predictor/
     │   └── README.md
-    └── flask/                   # ✅ Flask (READY)
-        ├── app.py
+    └── flask_stock_api/         # ✅ Flask (READY)
+        ├── stock_api.py
         ├── templates/index.html
         └── README.md
 ```
@@ -161,8 +161,8 @@ lab1/
 .\venv\Scripts\Activate.ps1
 
 # 2. Run Streamlit (easiest)
-cd A3\streamlit
-streamlit run stock_prediction_app.py
+cd web_deployments\streamlit_stock_app
+streamlit run main_app.py
 
 # 3. Open browser at http://localhost:8501
 # 4. Select stock, set dates, click "RUN PREDICTION"

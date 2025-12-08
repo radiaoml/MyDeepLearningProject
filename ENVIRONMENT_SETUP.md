@@ -44,11 +44,11 @@ After activation, your terminal prompt will show `(venv)` prefix.
 # Activate venv first
 .\venv\Scripts\Activate.ps1
 
-# Navigate to A3
-cd A3
+# Navigate to web_deployments/streamlit_stock_app
+cd web_deployments\streamlit_stock_app
 
 # Run the app
-streamlit run stock_prediction_app.py
+streamlit run main_app.py
 ```
 
 #### 2. Run Neural Network Training Scripts
@@ -56,14 +56,14 @@ streamlit run stock_prediction_app.py
 # Activate venv first
 .\venv\Scripts\Activate.ps1
 
-# Navigate to A1
-cd A1
+# Navigate to neural_networks_lab
+cd neural_networks_lab
 
 # Run any of the models:
-python Lab_ANN_Bousmah (1).py      # ANN - Fashion MNIST
-python Lab_lstm.py                  # LSTM - TATA stock
-python lab_lstm_dynamic.py          # LSTM - Dynamic stock
-python lab_rnn.py                   # RNN - Stock prediction
+python fashion_mnist_classification.py  # ANN - Fashion MNIST
+python stock_prediction_lstm.py         # LSTM - TATA stock
+python stock_prediction_lstm_dynamic.py # LSTM - Dynamic stock
+python stock_prediction_rnn.py          # RNN - Stock prediction
 ```
 
 ### Deactivate the Virtual Environment
@@ -107,17 +107,23 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ## 📂 Project Structure Reminder
 
 ```
-lab1/
+my-deep-learning-repo/
 ├── venv/                    # ✅ Virtual environment
 ├── requirements.txt         # ✅ Dependencies list
-├── A1/                      # Neural network models
-│   ├── Lab_ANN_Bousmah (1).py
-│   ├── Lab_lstm.py
-│   ├── lab_lstm_dynamic.py
-│   └── lab_rnn.py
-└── A3/                      # Streamlit app
-    ├── AAPL.h5
-    └── stock_prediction_app.py
+├── neural_networks_lab/     # Neural network models
+│   ├── fashion_mnist_classification.py
+│   ├── stock_prediction_lstm.py
+│   ├── stock_prediction_lstm_dynamic.py
+│   └── stock_prediction_rnn.py
+└── web_deployments/         # Deployment apps
+    ├── streamlit_stock_app/
+    │   └── main_app.py
+    ├── fastapi_stock_service/
+    │   └── api_server.py
+    ├── flask_stock_api/
+    │   └── stock_api.py
+    └── django_stock_platform/
+        └── manage.py
 ```
 
 ---
@@ -129,8 +135,8 @@ lab1/
 .\venv\Scripts\Activate.ps1
 
 # 2. Run your Streamlit app
-cd A3
-streamlit run stock_prediction_app.py
+cd web_deployments\streamlit_stock_app
+streamlit run main_app.py
 
 # 3. Open browser at http://localhost:8501
 ```
