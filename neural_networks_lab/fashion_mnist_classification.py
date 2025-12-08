@@ -62,7 +62,7 @@ print('\nTest accuracy:', test_acc)
 probability_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])
 predictions = probability_model.predict(test_images)
 
-def plot_image(i, predictions_array, true_label, img):
+def display_prediction_image(i, predictions_array, true_label, img):
   true_label, img = true_label[i], img[i]
   plt.grid(False)
   plt.xticks([])
@@ -81,7 +81,7 @@ def plot_image(i, predictions_array, true_label, img):
                                 class_names[true_label]),
                                 color=color)
 
-def plot_value_array(i, predictions_array, true_label):
+def display_confidence_chart(i, predictions_array, true_label):
   true_label = true_label[i]
   plt.grid(False)
   plt.xticks(range(10))
@@ -107,8 +107,8 @@ num_images = num_rows * num_cols
 plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
 for i in range(num_images):
     plt.subplot(num_rows, 2 * num_cols, 2 * i + 1)
-    plot_image(i, predictions[i], test_labels, test_images)
+    display_prediction_image(i, predictions[i], test_labels, test_images)
     plt.subplot(num_rows, 2 * num_cols, 2 * i + 2)
-    plot_value_array(i, predictions[i], test_labels)
+    display_confidence_chart(i, predictions[i], test_labels)
 plt.tight_layout()
 plt.show()
