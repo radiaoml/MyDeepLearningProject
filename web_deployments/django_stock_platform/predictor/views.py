@@ -11,12 +11,12 @@ from keras.layers import LSTM, Dense, Dropout
 import os
 from datetime import timedelta
 
-def index(request):
+def render_home_page(request):
     """Render the main page"""
     return render(request, 'index.html')
 
 @csrf_exempt
-def predict(request):
+def process_stock_prediction(request):
     """Handle prediction requests with full LSTM model"""
     if request.method == 'POST':
         try:

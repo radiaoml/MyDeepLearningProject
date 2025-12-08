@@ -6,7 +6,7 @@
 
 ```powershell
 # 1. Navigate to the django folder
-cd A3\django
+cd web_deployments\django_stock_platform
 
 # 2. Run migrations (first time only)
 ..\..\venv\Scripts\python manage.py migrate
@@ -31,7 +31,7 @@ cd A3\django
 ## 🛠️ Project Structure
 
 ```
-A3/django/
+web_deployments/django_stock_platform/
 ├── manage.py                    # Django management script
 ├── stock_prediction/            # Main project folder
 │   ├── settings.py             # Project settings
