@@ -9,10 +9,10 @@
 .\venv\Scripts\Activate.ps1
 
 # Navigate to flask folder
-cd A3\flask
+cd web_deployments\flask_stock_api
 
 # Run the Flask app
-python app.py
+python stock_api.py
 
 # Open: http://localhost:5000
 ```
@@ -42,8 +42,8 @@ python app.py
 ## 📁 Project Structure
 
 ```
-A3/flask/
-├── app.py                # Flask application with LSTM
+web_deployments/flask_stock_api/
+├── stock_api.py         # Flask application with LSTM
 ├── templates/
 │   └── index.html       # Beautiful web UI
 └── *.h5                 # Trained models (auto-generated)
@@ -55,7 +55,7 @@ A3/flask/
 
 ### Change Port
 ```python
-# In app.py, change the last line:
+# In stock_api.py, change the last line:
 app.run(debug=True, port=5001)
 ```
 
@@ -69,7 +69,7 @@ app.run(debug=False, host='0.0.0.0', port=5000)
 ## 📊 All Deployments Comparison
 
 | Framework | Port | UI | LSTM | Status |
-|-----------|------|----|----- |--------|
+|-----------|------|----|------|--------|
 | **Streamlit** | 8501 | ✅ Built-in | ✅ Full | ✅ Ready |
 | **FastAPI** | 8000 | ✅ Custom | ✅ Full | ✅ Ready |
 | **Django** | 8000 | ✅ Custom | ✅ Full | ✅ Ready |

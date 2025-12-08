@@ -21,12 +21,12 @@ CORS(app)
 # ---------------------------------------------------------------
 
 @app.route('/')
-def index():
+def render_home_page():
     """Render the main page"""
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
-def predict():
+def handle_stock_prediction():
     """Handle prediction requests with full LSTM model"""
     try:
         data = request.get_json()
